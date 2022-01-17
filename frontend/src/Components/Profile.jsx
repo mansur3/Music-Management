@@ -364,7 +364,7 @@ const Profile = () => {
         setAlbum(d);
         // console.log(d);
       }
-      console.log(album);
+      // console.log(album);
 
 
       const handleChange = (e) => {
@@ -378,13 +378,13 @@ const Profile = () => {
 
             setAlbum(data.album);
             // console.log(e); 
-            console.log(data);
+            // console.log(data);
       }
      
       const handleYearASC = async () => {
         const {data} = await axios.get("http://localhost:2233/album/asc/data/find");
         setAlbum(data.album);
-        console.log(album);
+        // console.log(album);
       }
 
       const handleYearDESC = async () => {
@@ -432,7 +432,7 @@ const Profile = () => {
       
       
 
-      console.log(isAuth, token, loading);
+      // console.log(isAuth, token, loading);
 
 // if(!isAuth) {
 //   return (
@@ -461,7 +461,7 @@ const Profile = () => {
 
       const registerUser = async () => {
         const {data} = await axios.post("http://localhost:2233/register", registerData);
-        console.log(data); 
+        // console.log(data); 
       }
 
 
@@ -534,14 +534,28 @@ const Profile = () => {
      }
 
 
-     const postAlbum = async () => {
+     const postAlbum =  () => {
          setNewAlbum({...newAlbum, ["songs"] : storingSong})
-         let {data} = await axios.post("http://localhost:2233/album", newAlbum);
-        //  let {data} = await axios.patch("http://localhost:2233/")
-        let updatedata = await axios.get(`http://localhost:2233/update/${token.user._id}/${data.album._id}`)
-        console.log(updatedata.data.user);
+        //  console.log(newAlbum);
+        //  setTimeout(async () => {
+        //   let {data} = await axios.post("http://localhost:2233/album", newAlbum);
+        //   //  let {data} = await axios.patch("http://localhost:2233/")
+        //   let updatedata = await axios.get(`http://localhost:2233/update/${token.user._id}/${data.album._id}`)
+        //  }, 1000)
+        
+        // console.log(updatedata.data.user);
      }
      
+
+     useEffect(() => {
+       setTimeout(async () => {
+        // console.log(newAlbum);
+        let {data} = await axios.post("http://localhost:2233/album", newAlbum);
+        //  let {data} = await axios.patch("http://localhost:2233/")
+        let updatedata = await axios.get(`http://localhost:2233/update/${token.user._id}/${data.album._id}`)
+       
+       }, 100)
+     }, [newAlbum])
 
 
 // if(!isAuth) {
@@ -921,6 +935,7 @@ const Profile = () => {
         <button onClick = {() => {
             setStoringSong([...storingSong, songAdd])
             setCount(count + 1)
+            console.log(storingSong);
         }}>Add One more</button>
         <Button onClick = {postAlbum} variant = "contained">Release your Album</Button>
 

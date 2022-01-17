@@ -366,8 +366,10 @@ const MainPage = () => {
       }, [])
       useEffect( () => {
         let timer = setTimeout(async () => {
-            const {data} = await axios.get(`http://localhost:2233/album/${searchItem}`)
+            const {data} = await axios.get(`http://localhost:2233/album/${searchItem}?size=3&page=${page}`)
             setAlbum(data.album);
+            setTotalPage(data.totalPage)
+
 
         }, 100)
         if(searchItem === "") {
@@ -515,7 +517,7 @@ const MainPage = () => {
               >
                 <MenuIcon />
               </IconButton>
-              <Link to = "/">
+              <Link style = {{textDecoration: "none"}} to = "/">
               <Typography
                 variant="h6"
                 noWrap

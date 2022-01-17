@@ -33,8 +33,14 @@ router.get("/", async (req, res) => {
 })
 
 router.get("/:name", async (req, res) => {
-    const album = await Album.find({name: req.params.name}).lean().exec();
-    return res.status(200).send({album});
+    let size = +req.query.size;
+    let page = +req.query.page;
+    let offset = (page - 1) * size;
+    const album = await Album.find({name: req.params.name}).skip(offset).limit(size).lean().exec();
+    const totalAlbum = await Album.find({name : req.params.name}).countDocuments().lean().exec();
+
+    let totalPage = Math.ceil(totalAlbum/size);
+    return res.status(200).send({album, totalPage});
 })
 
 router.get("/:id", async (req, res) => {
