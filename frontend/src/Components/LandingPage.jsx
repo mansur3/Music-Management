@@ -274,11 +274,22 @@ const MainPage = () => {
           const {data} = await axios.get("http://localhost:2233/album");
         //   console.log(data);
         // setAlbum(data.album);
+        let c = {};
         data.album.map((e) => {
-            if(!(genre.includes(e.genre))) {
-                setGenre([...genre, e.genre])
+            // if(!(genre.includes(e.genre))) {
+            //     setGenre([...genre, e.genre])
+            // }
+            if(!(e.genre in c)) {
+              c[e.genre] = 1;
             }
+            
         })
+        // console.log(c);
+        var f = [];
+        for (let x in c) {
+          f.push(x);
+        }
+        setGenre([...genre, ...f])
         const d = await axios.get(`http://localhost:2233/album/pagination?size=3&page=${page}`)
 
         setAlbum(d.data.album);
@@ -309,25 +320,43 @@ const MainPage = () => {
         
 
       }
+      const [selectGen, setSelectGen] = useState("all")
 
       const handleGenre = async (e) => {
-        const {data} = await axios.get(`http://localhost:2233/album/find/${e}`);
+        if(e === "all") {
+          const {data} = await axios.get(`http://localhost:2233/album/pagination?size=3&page=${page}`);
+          setAlbum(data.album);
+        } else {
+          const {data} = await axios.get(`http://localhost:2233/album/find/${e}?size=3&page=${page}`);
 
             setAlbum(data.album);
+        setTotalPage(data.totalPage)
+
+        }
+        setSelectGen(e);
+        
             // console.log(e); 
-            console.log(data);
+            // console.log(data);
       }
+      console.log(selectGen);
      
       const handleYearASC = async () => {
-        const {data} = await axios.get("http://localhost:2233/album/asc/data/find");
+        // if(selectGen == "all") {
+
+        // }
+        const {data} = await axios.get(`http://localhost:2233/album/asc/data/find?gen=${selectGen}&size=3&page=${page}`);
         setAlbum(data.album);
-        console.log(album);
+        setTotalPage(data.totalPage)
+
+        // console.log(album);
       }
 
       const handleYearDESC = async () => {
-        const {data} = await axios.get("http://localhost:2233/album/desc/data/find");
+        const {data} = await axios.get(`http://localhost:2233/album/desc/data/find?gen=${selectGen}&size=3&page=${page}`);
         setAlbum(data.album);
-        console.log(data)
+        setTotalPage(data.totalPage)
+
+        // console.log(data)
       }
       
     //   console.log(album); 
@@ -373,7 +402,8 @@ const MainPage = () => {
 
 
 
-      console.log(token);
+      // console.log(token);
+      console.log(genre);
 
 
       const [opena, setOpena] = useState(false);
@@ -619,7 +649,9 @@ const MainPage = () => {
             <div>
                 <select onChange = {(a) => {
                     handleGenre(a.target.value);
+                    
                 }} >
+                  <option value = "all">All</option>
                     {
                         genre.map((b) => (
                             <option  value = {b}>{b}</option>

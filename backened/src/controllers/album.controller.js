@@ -45,19 +45,50 @@ router.get("/:id", async (req, res) => {
 })
 
 router.get("/find/:genre", async (req, res) => {
-    const album = await Album.find({genre : req.params.genre}).lean().exec();
+    let size = +req.query.size;
+    let page = +req.query.page;
+    let offset = (page - 1) * size;
+    const album = await Album.find({genre : req.params.genre}).skip(offset).limit(size).lean().exec();
+    const totalAlbum = await Album.find({genre : req.params.genre}).countDocuments().lean().exec();
+    let totalPage = Math.ceil(totalAlbum/size);
 
-    return res.status(200).send({album})
+
+    return res.status(200).send({album, totalPage})
 })
 router.get("/asc/data/find", async (req, res) => {
-    const album = await Album.find().sort({year : 1}).lean().exec();
-
-    return res.status(200).send({album})
+    let size = +req.query.size;
+    let page = +req.query.page;
+    let offset = (page - 1) * size;
+    if(req.query.gen == "all") {
+        const album = await Album.find().sort({year : 1}).skip(offset).limit(size).lean().exec();
+        const totalAlbum = await Album.find().countDocuments().lean().exec();
+        let totalPage = Math.ceil(totalAlbum/size);
+        return res.status(200).send({album, totalPage})
+    } else {
+        const album = await Album.find({genre : req.query.gen}).sort({year : 1}).skip(offset).limit(size).lean().exec();
+    const totalAlbum = await Album.find({genre : req.query.gen}).countDocuments().lean().exec();
+    let totalPage = Math.ceil(totalAlbum/size);
+    return res.status(200).send({album, totalPage})
+    }
+    
 })
 
 router.get("/desc/data/find", async (req, res) => {
-    const album = await Album.find().sort({year : -1}).lean().exec();
-    return res.status(200).send({album})
+    let size = +req.query.size;
+    let page = +req.query.page;
+    let offset = (page - 1) * size;
+    // let genre = req.query.gen;
+    if(req.query.gen == "all") {
+        const album = await Album.find().sort({year : -1}).skip(offset).limit(size).lean().exec();
+    const totalAlbum = await Album.find().countDocuments().lean().exec();
+    let totalPage = Math.ceil(totalAlbum/size);
+    return res.status(200).send({album, totalPage})
+    } else {
+    const album = await Album.find({genre : req.query.gen}).sort({year : -1}).skip(offset).limit(size).lean().exec();
+    const totalAlbum = await Album.find({genre : req.query.gen}).countDocuments().lean().exec();
+    let totalPage = Math.ceil(totalAlbum/size);
+    return res.status(200).send({album, totalPage})
+    }
 })
 
 
